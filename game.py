@@ -11,7 +11,7 @@ pygame.init()
 game_active = True
 
 
-trained_face_data = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+detector = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 webcam = cv2.VideoCapture(0)
 webcam.set(3, 1280)
 webcam.set(4, 720)
@@ -58,10 +58,11 @@ while running:
     # opencv code
     ready, frame = webcam.read()
     gray_scaled = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    face_coordinates = trained_face_data.detectMultiScale(gray_scaled)
-    for (x, y, w, h) in face_coordinates:
-        box = cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
-    key = cv2.waitKey(1)
+    face_coordinates = detector.detectMultiScale(gray_scaled, scaleFactor=1.05,
+	minNeighbors=7, minSize=(30, 30), flags=cv2.CASCADE_SCALE_IMAGE)
+    # for (x, y, w, h) in face_coordinates:
+    #     box = cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+    
     # opencv code
     window = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     window = np.rot90(window)
@@ -69,8 +70,18 @@ while running:
     if game_active:
 
         """basket back"""
-        for (x, y, w, h) in face_coordinates:
-             window.blit(basket_back, (1280-x-w, y+h), )
+        max_area = 0
+        area = 0
+        for (a, b, c, d) in face_coordinates:
+            area = c * d
+            if area>max_area:
+                x = a
+                y = b
+                w = c
+                h = d
+                # max_area = area
+                # frame = frame[y:y+h, x:x+w]
+        window.blit(basket_back, (1280-x-w, y+h), )
         """basket back"""
 
         """ball"""
@@ -96,22 +107,31 @@ while running:
         """collision"""
 
         """basket"""
-        for (x, y, w, h) in face_coordinates:
-            window.blit(basket, (1280-x-w, y+h+15), )
-            if (m1 >= 1280-x-w) and (m1 <= 1280-x-w+200):
-                if (n1 >= y+h+40) and (n1 <= y+h+60):
-                    m1 = 1200
-                    n1 = 1200
-                    window.blit(ball1, (m1, n1), )
-                    ball_sound.play()
-                    score += 1
-            if (m2 >= 1280-x-w) and (m2 <= 1280-x-w+200):
-                if (n2 >= y+h+40) and (n2 <= y+h+60):
-                    m2 = 1200
-                    n2 = 1200
-                    window.blit(ball2, (m2, n2), )
-                    ball_sound.play()
-                    score += 1
+        for (a, b, c, d) in face_coordinates:
+            area = c * d
+            if area>max_area:
+                x = a
+                y = b
+                w = c
+                h = d
+                # max_area = area
+                # frame = frame[y:y+h, x:x+w]
+        
+        window.blit(basket, (1280-x-w, y+h+15), )
+        if (m1 >= 1280-x-w-50) and (m1 <= 1280-x-w+200):
+            if (n1 >= y+h+20) and (n1 <= y+h+60):
+                m1 = 1200
+                n1 = 1200
+                window.blit(ball1, (m1, n1), )
+                ball_sound.play()
+                score += 1
+        if (m2 >= 1280-x-w-50) and (m2 <= 1280-x-w+200):
+            if (n2 >= y+h+20) and (n2 <= y+h+60):
+                m2 = 1200
+                n2 = 1200
+                window.blit(ball2, (m2, n2), )
+                ball_sound.play()
+                score += 1
         """basket"""
         """scoreboard"""
         text = game_font.render('Score:', True, (255, 255, 255))
@@ -162,5 +182,5 @@ while running:
             score = 0
             screen.blit(window, (0, 0))
             window.blit(start_page, (1300, 1300))
-
+    key = cv2.waitKey(1)
     cv2.destroyAllWindows()
