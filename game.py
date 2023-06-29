@@ -107,15 +107,6 @@ while running:
         """collision"""
 
         """basket"""
-        for (a, b, c, d) in face_coordinates:
-            area = c * d
-            if area>max_area:
-                x = a
-                y = b
-                w = c
-                h = d
-                # max_area = area
-                # frame = frame[y:y+h, x:x+w]
         
         window.blit(basket, (1280-x-w, y+h+15), )
         if (m1 >= 1280-x-w-50) and (m1 <= 1280-x-w+200):
