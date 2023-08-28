@@ -33,7 +33,7 @@ game_sound = pygame.mixer.Sound("game.wav")
 
 score = 0
 clock = pygame.time.Clock()
-counter, timeboard = 31, '31'.rjust(3)
+counter, timeboard = 61, '61'.rjust(3)
 pygame.time.set_timer(pygame.USEREVENT, 1000)
 game_font = pygame.font.Font("freesansbold.ttf", 50)
 end_font = pygame.font.Font("freesansbold.ttf", 100)
@@ -47,6 +47,9 @@ running = True
 
 
 while running:
+    if keyboard.is_pressed('q'):
+        running = False
+        pygame.display.quit()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -68,7 +71,6 @@ while running:
     window = np.rot90(window)
     window = pygame.surfarray.make_surface(window).convert()
     if game_active:
-
         """basket back"""
         max_area = 0
         area = 0
@@ -154,10 +156,10 @@ while running:
             game_active = False
             # webcam.release()
             window.blit(start_page, (0, 0))
-            endscreen = game_font.render('Score: ', True, (255, 255, 255))
-            window.blit(endscreen, (350, 250))
-            score_board = game_font.render(f"{score}", True, (255, 255, 255))
-            window.blit(score_board, (550, 250))
+            endscreen = game_font.render('Score: ', True, (20, 122, 0))
+            window.blit(endscreen, (500, 250))
+            score_board = game_font.render(f"{score}", True, (20, 122, 0))
+            window.blit(score_board, (700, 250))
             game_sound.play()
         """Timer"""
         screen.blit(window, (0, 0))
@@ -169,7 +171,7 @@ while running:
         if keyboard.is_pressed(' '):
             game_active = True
             z = 0
-            counter, timeboard = 31, '31'.rjust(3)
+            counter, timeboard = 61, '61'.rjust(3)
             score = 0
             screen.blit(window, (0, 0))
             window.blit(start_page, (1300, 1300))
